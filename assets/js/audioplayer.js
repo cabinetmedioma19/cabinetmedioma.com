@@ -5,12 +5,12 @@
   ];
   const BAR_HEIGHTS = [5,14,20,8,18,6,22,11,19,7,16,9,21,12,17];
 
-  let page    = window.location.pathname.toLowerCase();
-  let isPres  = PAGES_PRESENCE.some(p => page.includes(p));
-  let src     = isPres
+  const page    = window.location.pathname.toLowerCase();
+  const isPres  = PAGES_PRESENCE.some(p => page.includes(p));
+  const src     = isPres
     ? 'assets/audio/medioma-presence.mp3'
     : 'assets/audio/medioma-seuil.mp3';
-  let label   = isPres ? 'PRÉSENCE' : 'SEUIL';
+  const label   = isPres ? 'PRÉSENCE' : 'SEUIL';
 
   const player = document.createElement('div');
   player.id = 'medioma-player';
@@ -37,7 +37,7 @@
     </div>
     <div class="mp-sublabel">Ambiance MEDIOMA ♪</div>
     <audio id="mp-audio" loop preload="none">
-      <source id="mp-source" src="${src}" type="audio/mpeg">
+      <source src="${src}" type="audio/mpeg">
     </audio>
   `;
   document.body.appendChild(player);
@@ -109,79 +109,4 @@
   });
 
   if (localStorage.getItem('medioma_audio') === 'on') startPlay();
-
-  // ── PJAX — navigation sans rechargement ──────────────────────────────────
-  window.MEDIOMA_NAV = function(href) {
-    // 1. Déterminer la nouvelle piste
-    const newIsPres = PAGES_PRESENCE.some(p => href.toLowerCase().includes(p));
-    const newSrc    = newIsPres
-      ? 'assets/audio/medioma-presence.mp3'
-      : 'assets/audio/medioma-seuil.mp3';
-
-    // 2. Fetch de la nouvelle page
-    fetch(href)
-      .then(r => r.text())
-      .then(html => {
-        const parser  = new DOMParser();
-        const newDoc  = parser.parseFromString(html, 'text/html');
-
-        // 3. Sauvegarder les éléments persistants (audio player, curseur, progress bar)
-        const saved = [];
-        const selectors = ['#medioma-player', '#cursor-star', '#medioma-scrollbar', '#page-transition'];
-        selectors.forEach(sel => {
-          const el = document.querySelector(sel);
-          if (el) { el.remove(); saved.push(el); }
-        });
-        document.querySelectorAll('.medioma-trail').forEach(el => {
-          el.remove(); saved.push(el);
-        });
-
-        // 4. Swapper le contenu body
-        document.body.innerHTML = newDoc.body.innerHTML;
-
-        // 5. Restaurer les éléments persistants
-        saved.forEach(el => document.body.appendChild(el));
-
-        // Fade-in de l'overlay de transition (sinon écran noir bloquant)
-        const overlay = document.getElementById('page-transition');
-        if (overlay) {
-          overlay.classList.remove('out');
-        }
-
-        // 6. Mettre à jour titre + URL
-        document.title = newDoc.title;
-        history.pushState({}, document.title, href);
-
-        // 7. Scroll haut de page
-        window.scrollTo(0, 0);
-
-        // 8. Changer de piste si nécessaire
-        if (newSrc !== src) {
-          src    = newSrc;
-          isPres = newIsPres;
-          const labelTxt = document.querySelector('.mp-tname-txt');
-          if (labelTxt) labelTxt.textContent = newIsPres ? 'PRÉSENCE' : 'SEUIL';
-          if (playing) {
-            fadeVolume(audio.volume, 0, 600, () => {
-              document.getElementById('mp-source').src = newSrc;
-              audio.load();
-              audio.play().then(() => fadeVolume(0, 0.27, 1200)).catch(() => {});
-            });
-          } else {
-            document.getElementById('mp-source').src = newSrc;
-            audio.load();
-          }
-        }
-
-        // 9. Ré-initialiser les animations page-spécifiques
-        if (typeof window.MEDIOMA_REINIT === 'function') window.MEDIOMA_REINIT();
-      })
-      .catch(() => { window.location = href; }); // fallback navigation classique
-  };
-
-  // Gestion bouton précédent/suivant du navigateur
-  window.addEventListener('popstate', function() {
-    window.MEDIOMA_NAV(window.location.pathname.split('/').pop() || 'index.html');
-  });
-
 })();
