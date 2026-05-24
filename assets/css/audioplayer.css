@@ -1,0 +1,111 @@
+#medioma-player {
+  position: fixed;
+  bottom: 24px;
+  right: 80px;
+  width: 192px;
+  background: rgba(22, 20, 38, 0.97);
+  border: 1px solid rgba(212, 168, 75, 0.28);
+  border-radius: 14px;
+  padding: 13px 15px;
+  z-index: 9998;
+  cursor: pointer;
+  transition: border-color 0.3s;
+  font-family: 'Jost', sans-serif;
+}
+#medioma-player:hover,
+#medioma-player.playing {
+  border-color: rgba(212, 168, 75, 0.52);
+}
+.mp-tname {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 9px;
+}
+.mp-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #d4a84b;
+  opacity: 0.45;
+  flex-shrink: 0;
+  transition: opacity 0.3s;
+}
+#medioma-player.playing .mp-dot {
+  opacity: 1;
+  animation: mp-dot-pulse 1.7s ease-in-out infinite;
+}
+@keyframes mp-dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.6); opacity: 0.55; }
+}
+.mp-tname-txt {
+  font-family: 'Cormorant Display', Georgia, serif;
+  font-size: 10.5px;
+  letter-spacing: 0.26em;
+  color: #d4a84b;
+  text-transform: uppercase;
+}
+.mp-viz {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 22px;
+  margin-bottom: 11px;
+}
+.mp-b {
+  width: 2.5px;
+  border-radius: 1.5px;
+  background: rgba(212, 168, 75, 0.18);
+  transition: background 0.3s;
+}
+#medioma-player.playing .mp-b {
+  background: rgba(212, 168, 75, 0.65);
+  animation: mp-bar 1.3s ease-in-out infinite;
+}
+@keyframes mp-bar {
+  0%, 100% { transform: scaleY(0.2); }
+  50%       { transform: scaleY(1); }
+}
+.mp-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mp-pbtn {
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 168, 75, 0.38);
+  background: transparent;
+  color: #d4a84b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.mp-pbtn:hover { background: rgba(212, 168, 75, 0.09); }
+.mp-prog {
+  flex: 1;
+  height: 1.5px;
+  background: rgba(242, 234, 216, 0.07);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.mp-pfill {
+  height: 100%;
+  background: #d4a84b;
+  width: 0%;
+  border-radius: 1px;
+  transition: width 0.15s linear;
+}
+.mp-sublabel {
+  font-size: 8.5px;
+  color: rgba(242, 234, 216, 0.18);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 9px;
+  text-align: right;
+}
