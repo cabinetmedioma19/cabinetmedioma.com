@@ -65,22 +65,19 @@
       if(popup&&!popup.closed) notifyTrack();
     });
 
-    /* Auto-open : si l'utilisateur avait la musique active, on rouvre
-       le popup dès sa première interaction (évite le blocage navigateur) */
-    if(localStorage.getItem('medioma_audio')==='on'){
-      let autoOpened=false;
-      function tryAutoOpen(){
-        if(autoOpened) return;
-        autoOpened=true;
-        ['click','scroll','keydown','touchstart'].forEach(ev=>
-          document.removeEventListener(ev,tryAutoOpen)
-        );
-        if(!popup||popup.closed){ openPopup(); notifyTrack(); }
-      }
-      ['click','scroll','keydown','touchstart'].forEach(ev=>
-        document.addEventListener(ev,tryAutoOpen,{once:true,passive:true})
-      );
+    /* Auto-open : ouvre le popup au premier clic n'importe où sur la page
+       (contourne le blocage navigateur des popups sans interaction) */
+    let autoOpened=false;
+    function tryAutoOpen(e){
+      if(autoOpened) return;
+      /* Ne pas déclencher si c'est un clic sur le bouton lui-même
+         (son propre listener s'en charge déjà) */
+      if(e&&e.target&&btn.contains(e.target)) return;
+      autoOpened=true;
+      document.removeEventListener('click',tryAutoOpen);
+      if(!popup||popup.closed){ openPopup(); notifyTrack(); }
     }
+    document.addEventListener('click',tryAutoOpen);
   }
 
   /* ════════════════════════════════════
