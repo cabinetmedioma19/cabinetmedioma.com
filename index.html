@@ -16,7 +16,7 @@
   <meta property="og:locale" content="fr_FR"/>
   <meta property="og:site_name" content="MEDIOMA – Frédéric Magne"/>
 
-  <link rel="stylesheet" href="assets/css/audioplayer.css"/>
+  <link rel="stylesheet" href="assets/css/medioma-audio.css">
 
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,8 +29,7 @@
       border: none;
       z-index: 1;
     }
-    /* Le player (z-index 9998 dans audioplayer.css) passe au-dessus de l'iframe */
-  </style>
+</style>
 </head>
 <body>
 
@@ -47,24 +46,7 @@
     2. On détermine si c'est une page PRÉSENCE ou SEUIL
     3. On demande au player de switcher la piste si nécessaire
   -->
-  <script>
-    (function () {
-      var PRESENCE = ['magnetisme','chakras','nettoyage','mediation','prestations','contact','rendez-vous'];
-      var frame    = document.getElementById('medioma-frame');
 
-      frame.addEventListener('load', function () {
-        try {
-          var iPath  = frame.contentWindow.location.pathname.toLowerCase();
-          var isPres = PRESENCE.some(function (p) { return iPath.indexOf(p) !== -1; });
-          if (typeof window._mediomaSwitchTrack === 'function') {
-            window._mediomaSwitchTrack(isPres);
-          }
-        } catch (e) { /* Cross-origin : ne devrait pas arriver en SAMEORIGIN */ }
-      });
-    })();
-  </script>
-
-  <script src="assets/js/audioplayer-shell.js" defer></script>
 
 </body>
 </html>

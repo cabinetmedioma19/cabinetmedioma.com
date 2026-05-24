@@ -1,0 +1,122 @@
+/* ── TRIGGER DESKTOP (bouton mandala) ──────── */
+#mp-trigger {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  width: 54px; height: 54px;
+  background: rgba(22,20,38,0.97);
+  border: 1px solid rgba(212,168,75,0.28);
+  border-radius: 50%;
+  z-index: 9999; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.3s, transform 0.3s;
+}
+#mp-trigger:hover {
+  border-color: rgba(212,168,75,0.6);
+  transform: scale(1.06);
+}
+#mp-trigger img {
+  width: 38px; height: 38px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  opacity: 0.85; transition: opacity 0.3s;
+}
+#mp-trigger:hover img { opacity: 1; }
+
+/* ── MESSAGE POPUP BLOQUÉ ───────────────────── */
+#mp-blocked {
+  position: fixed;
+  bottom: 90px; right: 24px;
+  background: rgba(22,20,38,0.97);
+  border: 1px solid rgba(212,168,75,0.25);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: 'Jost', sans-serif;
+  font-size: 11px; color: rgba(212,168,75,0.8);
+  letter-spacing: 0.08em;
+  z-index: 9999; display: none;
+  max-width: 200px; line-height: 1.5;
+}
+
+/* ── PLAYER FIXE MOBILE ─────────────────────── */
+#mp-mobile {
+  position: fixed;
+  bottom: 80px; right: 16px;
+  width: 158px;
+  background: rgba(22,20,38,0.97);
+  border: 1px solid rgba(212,168,75,0.28);
+  border-radius: 14px;
+  padding: 10px 12px;
+  z-index: 9999; cursor: pointer;
+  font-family: 'Jost', sans-serif;
+  transition: border-color 0.3s;
+  display: none;
+}
+#mp-mobile.playing { border-color: rgba(212,168,75,0.52); }
+.mpm-tname {
+  display: flex; align-items: center;
+  gap: 6px; margin-bottom: 8px;
+}
+.mpm-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #d4a84b; opacity: 0.45; flex-shrink: 0;
+  transition: opacity 0.3s;
+}
+#mp-mobile.playing .mpm-dot {
+  opacity: 1;
+  animation: mpm-dot 1.7s ease-in-out infinite;
+}
+@keyframes mpm-dot {
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.6);opacity:0.55}
+}
+.mpm-tname-txt {
+  font-family: 'Cormorant Display', Georgia, serif;
+  font-size: 9px; letter-spacing: 0.22em;
+  color: #d4a84b; text-transform: uppercase;
+}
+.mpm-viz {
+  display: flex; align-items: flex-end;
+  gap: 2px; height: 18px; margin-bottom: 9px;
+}
+.mpm-b {
+  width: 2px; border-radius: 1px;
+  background: rgba(212,168,75,0.18);
+}
+#mp-mobile.playing .mpm-b {
+  background: rgba(212,168,75,0.65);
+  animation: mpm-bar 1.3s ease-in-out infinite;
+}
+@keyframes mpm-bar { 0%,100%{transform:scaleY(0.2)} 50%{transform:scaleY(1)} }
+.mpm-ctrl { display: flex; align-items: center; gap: 8px; }
+.mpm-pbtn {
+  width: 23px; height: 23px; border-radius: 50%;
+  border: 1px solid rgba(212,168,75,0.38);
+  background: transparent; color: #d4a84b;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 10px; flex-shrink: 0;
+  transition: background 0.2s;
+}
+.mpm-pbtn:hover { background: rgba(212,168,75,0.09); }
+.mpm-prog {
+  flex: 1; height: 1.5px;
+  background: rgba(242,234,216,0.07);
+  border-radius: 1px; overflow: hidden;
+}
+.mpm-pfill {
+  height: 100%; background: #d4a84b;
+  width: 0%; border-radius: 1px;
+  transition: width 0.15s linear;
+}
+
+/* ── AFFICHAGE SELON APPAREIL ───────────────── */
+@media (min-width: 769px) {
+  #mp-trigger  { display: flex; }
+  #mp-mobile   { display: none !important; }
+}
+@media (max-width: 768px) {
+  #mp-trigger  { display: none !important; }
+  #mp-mobile   { display: block; }
+}
+@media (max-width: 380px) {
+  #mp-mobile { width: 140px; right: 12px; }
+}
