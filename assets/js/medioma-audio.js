@@ -21,7 +21,7 @@
     btn.setAttribute('role','button');
     btn.setAttribute('tabindex','0');
     btn.setAttribute('aria-label',"Ouvrir l'ambiance musicale MEDIOMA");
-    btn.innerHTML='<img src="assets/img/medioma-mandala.png" alt="">';
+    btn.innerHTML='<img src="assets/img/medioma-mandala.png" alt=""><span class="mp-label">♪ Ambiance</span>';
     document.body.appendChild(btn);
 
     const blocked=document.createElement('div');
@@ -64,6 +64,23 @@
     window.addEventListener('load',()=>{
       if(popup&&!popup.closed) notifyTrack();
     });
+
+    /* Auto-open : si l'utilisateur avait la musique active, on rouvre
+       le popup dès sa première interaction (évite le blocage navigateur) */
+    if(localStorage.getItem('medioma_audio')==='on'){
+      let autoOpened=false;
+      function tryAutoOpen(){
+        if(autoOpened) return;
+        autoOpened=true;
+        ['click','scroll','keydown','touchstart'].forEach(ev=>
+          document.removeEventListener(ev,tryAutoOpen)
+        );
+        if(!popup||popup.closed){ openPopup(); notifyTrack(); }
+      }
+      ['click','scroll','keydown','touchstart'].forEach(ev=>
+        document.addEventListener(ev,tryAutoOpen,{once:true,passive:true})
+      );
+    }
   }
 
   /* ════════════════════════════════════
