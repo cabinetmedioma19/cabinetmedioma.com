@@ -29,6 +29,9 @@ const VIOLET  = '122,90,170';   /* #7a5aaa */
 // ── 1. CURSEUR PREMIUM ──
 function initCursor() {
   if (window.matchMedia('(pointer:coarse)').matches || window.innerWidth <= 900) return;
+  if (window._medioma_once && window._medioma_once.cursor) return;
+  window._medioma_once = window._medioma_once || {};
+  window._medioma_once.cursor = true;
 
   // ── Point principal (suit la souris avec légère inertie) ──
   const dot = document.createElement('canvas');
@@ -70,6 +73,7 @@ function initCursor() {
       position:'fixed', borderRadius:'50%', pointerEvents:'none',
       zIndex:'9998', willChange:'transform,opacity', top:'0', left:'0'
     });
+    p.classList.add('medioma-trail');
     document.body.appendChild(p);
     trail.push({ el: p, x: 0, y: 0 });
   }
@@ -562,7 +566,10 @@ function initPageTransition() {
     link.addEventListener('click', e => {
       e.preventDefault();
       overlay.classList.add('out');
-      setTimeout(() => { window.location = href; }, 350);
+      setTimeout(() => {
+        if (window.MEDIOMA_NAV) { window.MEDIOMA_NAV(href); }
+        else { window.location = href; }
+      }, 350);
     });
   });
 }
@@ -824,10 +831,38 @@ function initTwinkle() {
 }
 
 // ══ INIT GLOBAL ══
+// ── Réinitialisation PJAX (éléments page-spécifiques) ──
+window.MEDIOMA_REINIT = function() {
+  initBgStars();
+  initTwinkle();
+  initOrb();
+  initStars();
+  initReveal();
+  initCounters();
+  initParallax();
+  initNav();
+  initHamburger();
+  initMegaDrop();
+  initBackTop();
+  initSmoothScroll();
+  initChakraGlow();
+  initMandala();
+  initAuraPhoto();
+  initCardLight();
+  initPageTransition();
+  if (!reduced) initTypewriter();
+  if (window.innerWidth > 900) initMagneticButtons();
+  initLivreOr();
+};
+
 function init() {
   initBgStars();
-  // Protection globale contre les erreurs
-  window.addEventListener('error', e => console.warn('MEDIOMA anim:', e.message));
+  // Protection globale contre les erreurs (une seule fois)
+  if (!window._medioma_once || !window._medioma_once.error) {
+    window._medioma_once = window._medioma_once || {};
+    window._medioma_once.error = true;
+    window.addEventListener('error', e => console.warn('MEDIOMA anim:', e.message));
+  }
   initTwinkle();
   initOrb();
   initStars();
@@ -856,7 +891,11 @@ function init() {
 
 // ── 21. BARRE DE PROGRESSION SCROLL ──
 function initScrollProgress() {
+  if (window._medioma_once && window._medioma_once.progress) return;
+  window._medioma_once = window._medioma_once || {};
+  window._medioma_once.progress = true;
   const bar = document.createElement('div');
+  bar.id = 'medioma-scrollbar';
   Object.assign(bar.style, {
     position:'fixed', top:'0', left:'0', height:'2px', width:'0%',
     background:'linear-gradient(90deg,#7a5aaa,#d4a84b)',
@@ -864,8 +903,10 @@ function initScrollProgress() {
   });
   document.body.prepend(bar);
   window.addEventListener('scroll', () => {
+    const b = document.getElementById('medioma-scrollbar');
+    if (!b) return;
     const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
-    bar.style.width = Math.min(pct, 100) + '%';
+    b.style.width = Math.min(pct, 100) + '%';
   }, { passive: true });
 }
 
