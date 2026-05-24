@@ -1,0 +1,61 @@
+═══════════════════════════════════════════════════
+MEDIOMA — BreadcrumbList Schema.org
+À insérer dans le <head> de chaque page
+═══════════════════════════════════════════════════
+
+── bilan.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Bilan de Vie Énergétique","item":"https://cabinetmedioma.com/bilan.html"}]}</script>
+
+── blog.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://cabinetmedioma.com/blog.html"}]}</script>
+
+── blog-chakras.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://cabinetmedioma.com/blog.html"},{"@type":"ListItem","position":3,"name":"Comment savoir si vos chakras sont déséquilibrés ?","item":"https://cabinetmedioma.com/blog-chakras.html"}]}</script>
+
+── blog-magnetisme.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://cabinetmedioma.com/blog.html"},{"@type":"ListItem","position":3,"name":"Le magnétisme peut-il vraiment soulager les douleurs chroniques ?","item":"https://cabinetmedioma.com/blog-magnetisme.html"}]}</script>
+
+── blog-meditation.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://cabinetmedioma.com/blog.html"},{"@type":"ListItem","position":3,"name":"5 minutes par jour suffisent-elles pour méditer efficacement ?","item":"https://cabinetmedioma.com/blog-meditation.html"}]}</script>
+
+── blog-nettoyage.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://cabinetmedioma.com/blog.html"},{"@type":"ListItem","position":3,"name":"Votre maison garde-t-elle la mémoire de ce qui s'y est passé ?","item":"https://cabinetmedioma.com/blog-nettoyage.html"}]}</script>
+
+── chakras.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Alignement des Chakras","item":"https://cabinetmedioma.com/chakras.html"}]}</script>
+
+── contact.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Contact & Rendez-vous","item":"https://cabinetmedioma.com/contact.html"}]}</script>
+
+── harmonisation.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Harmonisation Énergétique","item":"https://cabinetmedioma.com/harmonisation.html"}]}</script>
+
+── livre-or.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Livre d'Or","item":"https://cabinetmedioma.com/livre-or.html"}]}</script>
+
+── magnetisme.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Magnétisme Thérapeutique","item":"https://cabinetmedioma.com/magnetisme.html"}]}</script>
+
+── meditation.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Initiation à la Méditation","item":"https://cabinetmedioma.com/meditation.html"}]}</script>
+
+── mentions-legales.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Mentions Légales","item":"https://cabinetmedioma.com/mentions-legales.html"}]}</script>
+
+── merci.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Merci","item":"https://cabinetmedioma.com/merci.html"}]}</script>
+
+── nettoyage.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Nettoyage & Purification des Lieux","item":"https://cabinetmedioma.com/nettoyage.html"}]}</script>
+
+── newsletter.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Newsletter","item":"https://cabinetmedioma.com/newsletter.html"}]}</script>
+
+── plan-du-site.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Plan du site","item":"https://cabinetmedioma.com/plan-du-site.html"}]}</script>
+
+── tarifs.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Tarifs & Prestations","item":"https://cabinetmedioma.com/tarifs.html"}]}</script>
+
+── voyance.html ──
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://cabinetmedioma.com/"},{"@type":"ListItem","position":2,"name":"Voyance & Médiumité","item":"https://cabinetmedioma.com/voyance.html"}]}</script>

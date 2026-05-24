@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /merci.html
+Disallow: /.netlify/
+ 
+Sitemap: https://cabinetmedioma.com/sitemap.xml
+ 

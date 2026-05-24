@@ -1,0 +1,87 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Brotli est activé automatiquement par Netlify Edge — aucun plugin requis.
+# Le header "Accept-Encoding: br" est négocié côté CDN.
+
+# ── Sécurité HTTP — headers sur toutes les pages ──
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options              = "DENY"
+    X-Content-Type-Options       = "nosniff"
+    Referrer-Policy              = "strict-origin-when-cross-origin"
+    Permissions-Policy           = "camera=(), microphone=(), geolocation=()"
+    X-XSS-Protection             = "1; mode=block"
+
+# ── Cache long sur les assets statiques (1 an) ──
+[[headers]]
+  for = "/style.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/animations.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# ── Cache court sur les pages HTML (1 heure) ──
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+# ── CORS restreint aux fonctions Netlify ──
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin  = "https://cabinetmedioma.com"
+    Access-Control-Allow-Methods = "POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
+
+# ── Redirects ──
+[[redirects]]
+  from = "/sitemap"
+  to   = "/sitemap.xml"
+  status = 301
+
+# Redirect www → non-www (canonicalisation)
+[[redirects]]
+  from   = "https://www.cabinetmedioma.com/*"
+  to     = "https://cabinetmedioma.com/:splat"
+  status = 301
+  force  = true

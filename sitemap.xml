@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Page d'accueil -->
+  <url>
+    <loc>https://cabinetmedioma.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+
+  <!-- Services (0.8) -->
+  <url>
+    <loc>https://cabinetmedioma.com/voyance.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://cabinetmedioma.com/magnetisme.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://cabinetmedioma.com/chakras.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://cabinetmedioma.com/nettoyage.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://cabinetmedioma.com/meditation.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://cabinetmedioma.com/bilan.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://cabinetmedioma.com/harmonisation.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+
+  <!-- Contact (0.8) -->
+  <url>
+    <loc>https://cabinetmedioma.com/contact.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+
+  <!-- Tarifs (0.7) -->
+  <url>
+    <loc>https://cabinetmedioma.com/tarifs.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+
+  <!-- Blog hub (0.7) -->
+  <url>
+    <loc>https://cabinetmedioma.com/blog.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+
+  <!-- Articles de blog (0.6) -->
+  <url>
+    <loc>https://cabinetmedioma.com/blog-chakras.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://cabinetmedioma.com/blog-magnetisme.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://cabinetmedioma.com/blog-meditation.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://cabinetmedioma.com/blog-nettoyage.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+
+  <!-- Autres (0.5) -->
+  <url>
+    <loc>https://cabinetmedioma.com/newsletter.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://cabinetmedioma.com/livre-or.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://cabinetmedioma.com/plan-du-site.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://cabinetmedioma.com/mentions-legales.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+
+  <url>
+    <loc>https://cabinetmedioma.com/merci.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <lastmod>2025-05-19</lastmod>
+  </url>
+
+</urlset>
