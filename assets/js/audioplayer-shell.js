@@ -1,19 +1,14 @@
 (function () {
-  // Si on est chargé dans un iframe (shell), le shell gère l'audio — on ne crée rien ici
-  if (window.self !== window.top) return;
-
   const PAGES_PRESENCE = [
     'magnetisme', 'chakras', 'nettoyage',
     'mediation', 'prestations', 'contact', 'rendez-vous'
   ];
   const BAR_HEIGHTS = [5,14,20,8,18,6,22,11,19,7,16,9,21,12,17];
 
-  const page    = window.location.pathname.toLowerCase();
-  const isPres  = PAGES_PRESENCE.some(p => page.includes(p));
-  const src     = isPres
-    ? 'assets/audio/medioma-presence.mp3'
-    : 'assets/audio/medioma-seuil.mp3';
-  const label   = isPres ? 'PRÉSENCE' : 'SEUIL';
+  // Au démarrage : page d'accueil → SEUIL
+  let currentIsPres = false;
+  const SRC_SEUIL    = 'assets/audio/medioma-seuil.mp3';
+  const SRC_PRESENCE = 'assets/audio/medioma-presence.mp3';
 
   const player = document.createElement('div');
   player.id = 'medioma-player';
@@ -24,7 +19,7 @@
   player.innerHTML = `
     <div class="mp-tname">
       <span class="mp-dot"></span>
-      <span class="mp-tname-txt">${label}</span>
+      <span class="mp-tname-txt" id="mp-label">SEUIL</span>
     </div>
     <div class="mp-viz" id="mp-viz-bars"></div>
     <div class="mp-ctrl">
@@ -40,7 +35,7 @@
     </div>
     <div class="mp-sublabel">Ambiance MEDIOMA ♪</div>
     <audio id="mp-audio" loop preload="none">
-      <source src="${src}" type="audio/mpeg">
+      <source id="mp-source" src="${SRC_SEUIL}" type="audio/mpeg">
     </audio>
   `;
   document.body.appendChild(player);
@@ -54,14 +49,15 @@
     vizEl.appendChild(b);
   });
 
-  const audio  = document.getElementById('mp-audio');
-  const pfill  = document.getElementById('mp-pfill');
-  const icon   = document.getElementById('mp-icon');
-  const PLAY   = '5,3 19,12 5,21';
-  const PAUSE  = '4,3 9,3 9,21 4,21 M15,3 20,3 20,21 15,21';
-  let playing  = false;
-  let prog     = 0;
-  let tmr      = null;
+  const audio   = document.getElementById('mp-audio');
+  const pfill   = document.getElementById('mp-pfill');
+  const icon    = document.getElementById('mp-icon');
+  const labelEl = document.getElementById('mp-label');
+  const PLAY    = '5,3 19,12 5,21';
+  const PAUSE   = '4,3 9,3 9,21 4,21 M15,3 20,3 20,21 15,21';
+  let playing   = false;
+  let prog      = 0;
+  let tmr       = null;
 
   function fadeVolume(from, to, ms, cb) {
     const steps = 25;
@@ -102,6 +98,7 @@
     playing = false;
     localStorage.setItem('medioma_audio', 'off');
     clearInterval(tmr);
+    tmr = null;
   }
 
   function toggle() { playing ? stopPlay() : startPlay(); }
@@ -111,5 +108,33 @@
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
   });
 
+  // ── Switch de piste quand l'iframe navigue ──────────────────────────
+  window._mediomaSwitchTrack = function (isPres) {
+    if (isPres === currentIsPres) return; // déjà sur la bonne piste
+    currentIsPres = isPres;
+    const newSrc  = isPres ? SRC_PRESENCE : SRC_SEUIL;
+    const newLabel = isPres ? 'PRÉSENCE' : 'SEUIL';
+    labelEl.textContent = newLabel;
+
+    if (!playing) {
+      // Pas de lecture en cours — juste changer la source
+      audio.src = newSrc;
+      audio.load();
+      return;
+    }
+    // Lecture en cours : fondu sortant → changer piste → fondu entrant
+    const vol = audio.volume;
+    fadeVolume(vol, 0, 700, () => {
+      audio.pause();
+      audio.src = newSrc;
+      audio.load();
+      audio.volume = 0;
+      audio.play().then(() => {
+        fadeVolume(0, 0.27, 1800);
+      }).catch(() => {});
+    });
+  };
+
+  // Démarrage automatique si l'utilisateur avait laissé la musique allumée
   if (localStorage.getItem('medioma_audio') === 'on') startPlay();
 })();
