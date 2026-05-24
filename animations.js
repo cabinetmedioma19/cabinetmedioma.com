@@ -532,20 +532,25 @@ function initMandala() {
 // ── 9. TRANSITION DE PAGE FLUIDE ──
 function initPageTransition() {
   if (reduced) return;
-  const overlay = document.createElement('div');
-  overlay.id = 'page-transition';
-  const style = document.createElement('style');
-  style.textContent = `
-    #page-transition{
-      position:fixed;inset:0;z-index:99999;
-      background:linear-gradient(135deg,#181628,rgba(${VIOLET},.95));
-      pointer-events:none;
-      opacity:0;transition:opacity .35s ease;
-    }
-    #page-transition.out{opacity:1;pointer-events:all;}
-  `;
-  document.head.appendChild(style);
-  document.body.appendChild(overlay);
+
+  // Réutiliser l'overlay existant (PJAX le préserve) ou en créer un nouveau
+  let overlay = document.getElementById('page-transition');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'page-transition';
+    const style = document.createElement('style');
+    style.textContent = `
+      #page-transition{
+        position:fixed;inset:0;z-index:99999;
+        background:linear-gradient(135deg,#181628,rgba(${VIOLET},.95));
+        pointer-events:none;
+        opacity:0;transition:opacity .35s ease;
+      }
+      #page-transition.out{opacity:1;pointer-events:all;}
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(overlay);
+  }
 
   // Entrée sur la page — double RAF pour garantir rendu
   requestAnimationFrame(() => {

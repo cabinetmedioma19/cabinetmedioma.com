@@ -142,6 +142,12 @@
         // 5. Restaurer les éléments persistants
         saved.forEach(el => document.body.appendChild(el));
 
+        // Fade-in de l'overlay de transition (sinon écran noir bloquant)
+        const overlay = document.getElementById('page-transition');
+        if (overlay) {
+          overlay.classList.remove('out');
+        }
+
         // 6. Mettre à jour titre + URL
         document.title = newDoc.title;
         history.pushState({}, document.title, href);
