@@ -1,62 +1,70 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>MEDIOMA – Magnétiseur & Médium | Malemort (19360)</title>
-  <meta name="description" content="Découvrez les soins énergétiques de Frédéric Magne, thérapeute à Malemort (Corrèze). Magnétisme, voyance, chakras, méditation. Réservez votre séance."/>
-  <meta name="robots" content="index,follow"/>
-  <link rel="canonical" href="https://cabinetmedioma.com/"/>
-  <link rel="icon" type="image/png" href="favicon.png"/>
-  <link rel="apple-touch-icon" href="favicon.png"/>
-  <meta property="og:type" content="website"/>
-  <meta property="og:url" content="https://cabinetmedioma.com/"/>
-  <meta property="og:title" content="MEDIOMA – Frédéric Magne | Magnétiseur & Médium à Malemort"/>
-  <meta property="og:description" content="Frédéric Magne, thérapeute en bien-être à Malemort (Corrèze). Magnétisme, voyance, médiumité, nettoyage énergétique, initiation à la méditation. Sur rendez-vous."/>
-  <meta property="og:image" content="https://cabinetmedioma.com/about-visual.png"/>
-  <meta property="og:locale" content="fr_FR"/>
-  <meta property="og:site_name" content="MEDIOMA – Frédéric Magne"/>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MEDIOMA – Magnétiseur & Médium | Malemort (19360)</title>
+<meta name="description" content="Découvrez les soins énergétiques de Frédéric Magne, thérapeute à Malemort (Corrèze). Magnétisme, voyance, chakras, méditation. Réservez votre séance."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://cabinetmedioma.com/"/>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<link rel="apple-touch-icon" href="favicon.png"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://cabinetmedioma.com/"/>
+<meta property="og:title" content="MEDIOMA – Frédéric Magne | Magnétiseur & Médium à Malemort"/>
+<meta property="og:description" content="Frédéric Magne, thérapeute en bien-être à Malemort (Corrèze). Magnétisme, voyance, médiumité, nettoyage énergétique, initiation à la méditation. Sur rendez-vous."/>
+<meta property="og:image" content="https://cabinetmedioma.com/about-visual.png"/>
+<meta property="og:locale" content="fr_FR"/>
+<meta property="og:site_name" content="MEDIOMA – Frédéric Magne"/>
 
-  <!-- Styles du player audio -->
-  <link rel="stylesheet" href="assets/css/medioma-audio.css">
-  <link rel="stylesheet" href="assets/css/audioplayer.css">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0c0c0c; }
 
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #0c0c0c; }
+  /* Iframe principale — contenu des pages */
+  #medioma-frame {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    z-index: 1;
+  }
 
-    /* Iframe principale — contenu des pages */
-    #medioma-frame {
-      position: fixed;
-      top: 0; left: 0;
+  /* Player audio — iframe fixe, persiste entre toutes les navigations */
+  #medioma-player-frame {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: 110px;
+    border: none;
+    z-index: 1000;
+    border-radius: 12px;
+    overflow: hidden;
+    /* Invisible tant que le player n'est pas prêt */
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  #medioma-player-frame.ready {
+    opacity: 1;
+  }
+
+  /* Mobile : player en bas plein largeur */
+  @media (max-width: 600px) {
+    #medioma-player-frame {
+      bottom: 0;
+      right: 0;
       width: 100%;
-      height: 100%;
-      border: none;
-      z-index: 1;
+      height: 90px;
+      border-radius: 0;
     }
-
-    /* Player audio — positionné au-dessus de l'iframe, persiste entre les pages */
-    #medioma-player {
-      position: fixed !important;
-      bottom: 20px !important;
-      right: 20px !important;
-      z-index: 100 !important;
-    }
-    #mp-mobile {
-      position: fixed !important;
-      bottom: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      z-index: 100 !important;
-    }
-    #mp-trigger {
-      position: fixed !important;
-      z-index: 100 !important;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 
-  <!-- Iframe principale : contenu du site -->
+  <!-- Iframe principale : contenu du site — ne recharge JAMAIS le player -->
   <iframe
     id="medioma-frame"
     src="home.html"
@@ -65,37 +73,54 @@
   ></iframe>
 
   <!--
-    Le player audio est chargé ICI dans le shell (index.html).
-    Il ne se recharge JAMAIS lors de la navigation entre les pages.
-    audioplayer-shell.js expose window._mediomaSwitchTrack(isPres)
-    pour changer de piste sans couper la musique.
+    Player audio : chargé UNE SEULE FOIS dans le shell parent.
+    Il ne se recharge JAMAIS lors des navigations entre pages.
+    Communication via BroadcastChannel('medioma_track').
   -->
-  <script src="audioplayer-shell.js" defer></script>
+  <iframe
+    id="medioma-player-frame"
+    src="medioma-player.html"
+    title="Lecteur audio MEDIOMA"
+    allow="autoplay"
+  ></iframe>
 
   <script>
     (function(){
-      var frame = document.getElementById('medioma-frame');
+
+      var contentFrame = document.getElementById('medioma-frame');
+      var playerFrame  = document.getElementById('medioma-player-frame');
+      var channel      = new BroadcastChannel('medioma_track');
 
       // Pages de "présence" → piste soins & énergies
       var presencePages = [
         'magnetisme','chakras','nettoyage',
         'mediation','prestations','contact','rendez-vous',
-        'harmonisation','bilan','voyance'
+        'harmonisation','bilan','voyance','meditation'
       ];
 
-      // On ignore le tout premier load (home.html = seuil = piste par défaut déjà correcte)
-      var firstLoad = true;
-      frame.addEventListener('load', function(){
-        if (firstLoad) { firstLoad = false; return; }
-        try {
-          var url = frame.contentWindow.location.pathname.toLowerCase();
-          var isPres = presencePages.some(function(p){ return url.indexOf(p) !== -1; });
-          // Demande au player de switcher la piste si nécessaire
-          if (typeof window._mediomaSwitchTrack === 'function') {
-            window._mediomaSwitchTrack(isPres);
-          }
-        } catch(e){}
+      // Affiche le player une fois chargé
+      playerFrame.addEventListener('load', function(){
+        playerFrame.classList.add('ready');
       });
+
+      // On ignore le tout premier load (home.html = seuil = piste par défaut)
+      var firstLoad = true;
+
+      contentFrame.addEventListener('load', function(){
+        if (firstLoad) { firstLoad = false; return; }
+
+        try {
+          var url = contentFrame.contentWindow.location.pathname.toLowerCase();
+          var isPres = presencePages.some(function(p){ return url.indexOf(p) !== -1; });
+
+          // Envoie la commande de piste via BroadcastChannel → medioma-player.html l'écoute
+          channel.postMessage({ track: isPres ? 'presence' : 'seuil' });
+
+        } catch(e) {
+          // Sécurité cross-origin silencieuse
+        }
+      });
+
     })();
   </script>
 
