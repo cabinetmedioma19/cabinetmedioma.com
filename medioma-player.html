@@ -4,179 +4,245 @@
 <meta charset="UTF-8">
 <title>MEDIOMA ♪</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body {
-    width: 300px; height: 110px;
-    overflow: hidden;
-    background: #181628;
-    font-family: 'Jost', 'Helvetica Neue', sans-serif;
-    user-select: none;
-  }
-  body {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0 14px;
-    border: 1px solid rgba(212,168,75,0.28);
-    border-radius: 12px;
-  }
-  #mp-ring-wrap {
-    position: relative;
-    width: 52px; height: 52px;
-    flex-shrink: 0; cursor: pointer;
-    background: rgba(242,234,216,0.92);
-    border-radius: 50%;
-  }
-  #mp-ring-svg {
-    position: absolute; top: 0; left: 0;
-    width: 52px; height: 52px;
-    transform: rotate(-90deg);
-  }
-  #mp-ring-track { fill: none; stroke: rgba(212,168,75,0.1); stroke-width: 2; }
-  #mp-ring-fill {
-    fill: none; stroke: #d4a84b;
-    stroke-width: 2; stroke-linecap: round;
-    stroke-dasharray: 150.8; stroke-dashoffset: 150.8;
-    transition: stroke-dashoffset 0.15s linear;
-  }
-  #mp-mandala {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%,-50%);
-    width: 38px; height: 38px;
-    object-fit: contain;
-    mix-blend-mode: multiply;
-    opacity: 0.85; transition: opacity 0.3s;
-  }
-  body.playing #mp-mandala {
-    animation: spin 14s linear infinite; opacity: 1;
-  }
-  @keyframes spin {
-    from { transform: translate(-50%,-50%) rotate(0deg); }
-    to   { transform: translate(-50%,-50%) rotate(360deg); }
-  }
-  #mp-center { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-  #mp-track {
-    font-size: 9px; letter-spacing: 0.22em;
-    color: rgba(212,168,75,0.5); text-transform: uppercase;
-    font-family: 'Cormorant Display', Georgia, serif;
-    transition: color 0.3s;
-  }
-  body.playing #mp-track { color: #d4a84b; }
-  #mp-viz { display: flex; align-items: flex-end; gap: 2px; height: 18px; }
-  .mp-b {
-    width: 2.5px; border-radius: 1.5px;
-    background: rgba(212,168,75,0.18);
-  }
-  body.playing .mp-b {
-    background: rgba(212,168,75,0.65);
-    animation: bar 1.3s ease-in-out infinite;
-  }
-  @keyframes bar { 0%,100%{transform:scaleY(0.2)} 50%{transform:scaleY(1)} }
-  #mp-controls { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  #mp-playbtn {
-    width: 30px; height: 30px; border-radius: 50%;
-    border: 1px solid rgba(212,168,75,0.38);
-    background: transparent; color: #d4a84b;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: background 0.2s;
-  }
-  #mp-playbtn:hover { background: rgba(212,168,75,0.1); }
-  #mp-closebtn {
-    font-size: 10px; color: rgba(212,168,75,0.3);
-    cursor: pointer; letter-spacing: 0.1em;
-    text-transform: uppercase; transition: color 0.2s;
-  }
-  #mp-closebtn:hover { color: rgba(212,168,75,0.7); }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 300px; height: 110px;
+  overflow: hidden;
+  background: #181628;
+  font-family: 'Jost', 'Helvetica Neue', sans-serif;
+  user-select: none;
+}
+body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  border: 1px solid rgba(212,168,75,0.28);
+  border-radius: 12px;
+}
+#mp-ring-wrap {
+  position: relative;
+  width: 52px; height: 52px;
+  flex-shrink: 0; cursor: pointer;
+  background: rgba(242,234,216,0.92);
+  border-radius: 50%;
+}
+#mp-ring-svg {
+  position: absolute; top: 0; left: 0;
+  width: 52px; height: 52px;
+  transform: rotate(-90deg);
+}
+#mp-ring-track { fill: none; stroke: rgba(212,168,75,0.1); stroke-width: 2; }
+#mp-ring-fill {
+  fill: none; stroke: #d4a84b;
+  stroke-width: 2; stroke-linecap: round;
+  stroke-dasharray: 150.8; stroke-dashoffset: 150.8;
+  transition: stroke-dashoffset 0.15s linear;
+}
+#mp-mandala {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 38px; height: 38px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  opacity: 0.85; transition: opacity 0.3s;
+}
+body.playing #mp-mandala {
+  animation: spin 14s linear infinite; opacity: 1;
+}
+@keyframes spin {
+  from { transform: translate(-50%,-50%) rotate(0deg); }
+  to   { transform: translate(-50%,-50%) rotate(360deg); }
+}
+#mp-center { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+#mp-track {
+  font-size: 9px; letter-spacing: 0.22em;
+  color: rgba(212,168,75,0.5); text-transform: uppercase;
+  font-family: 'Cormorant Display', Georgia, serif;
+  transition: color 0.3s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+body.playing #mp-track { color: #d4a84b; }
+#mp-viz { display: flex; align-items: flex-end; gap: 2px; height: 18px; }
+.mp-b {
+  width: 2.5px; border-radius: 1.5px;
+  background: rgba(212,168,75,0.18);
+}
+body.playing .mp-b {
+  background: rgba(212,168,75,0.65);
+  animation: bar 1.3s ease-in-out infinite;
+}
+@keyframes bar { 0%,100%{transform:scaleY(0.2)} 50%{transform:scaleY(1)} }
+#mp-controls { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+#mp-playbtn {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid rgba(212,168,75,0.38);
+  background: transparent; color: #d4a84b;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.2s;
+}
+#mp-playbtn:hover { background: rgba(212,168,75,0.1); }
+#mp-closebtn {
+  font-size: 10px; color: rgba(212,168,75,0.3);
+  cursor: pointer; letter-spacing: 0.1em;
+  text-transform: uppercase; transition: color 0.2s;
+}
+#mp-closebtn:hover { color: rgba(212,168,75,0.7); }
 </style>
 </head>
 <body>
-  <div id="mp-ring-wrap" onclick="toggle()">
-    <svg id="mp-ring-svg" viewBox="0 0 52 52">
-      <circle id="mp-ring-track" cx="26" cy="26" r="24"/>
-      <circle id="mp-ring-fill"  cx="26" cy="26" r="24"/>
+
+<div id="mp-ring-wrap" onclick="toggle()">
+  <svg id="mp-ring-svg" viewBox="0 0 52 52">
+    <circle id="mp-ring-track" cx="26" cy="26" r="24"/>
+    <circle id="mp-ring-fill"  cx="26" cy="26" r="24"/>
+  </svg>
+  <img id="mp-mandala" src="assets/img/medioma-mandala.png" alt="">
+</div>
+
+<div id="mp-center">
+  <div id="mp-track">Ambiance</div>
+  <div id="mp-viz"></div>
+</div>
+
+<div id="mp-controls">
+  <div id="mp-playbtn" onclick="toggle()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="#d4a84b">
+      <polygon id="mp-poly" points="5,3 19,12 5,21"/>
     </svg>
-    <img id="mp-mandala" src="assets/img/medioma-mandala.png" alt="">
   </div>
-  <div id="mp-center">
-    <div id="mp-track">Ambiance</div>
-    <div id="mp-viz"></div>
-  </div>
-  <div id="mp-controls">
-    <div id="mp-playbtn" onclick="toggle()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="#d4a84b">
-        <polygon id="mp-poly" points="5,3 19,12 5,21"/>
-      </svg>
-    </div>
-    <div id="mp-closebtn" onclick="window.close()">×</div>
-  </div>
-  <audio id="mp-audio" loop preload="none">
-    <source id="mp-source" src="assets/audio/medioma-seuil.mp3" type="audio/mpeg">
-  </audio>
+  <div id="mp-closebtn" onclick="hidePlayer()">×</div>
+</div>
+
+<audio id="mp-audio" preload="none"></audio>
+
 <script>
 (function(){
-  const BAR_H=[5,13,18,7,17,5,20,10,18,6,15,8,19,11,16];
-  const CIRC=150.8;
-  const PLAY='5,3 19,12 5,21';
-  const PAUSE='4,3 10,3 10,21 4,21 M14,3 20,3 20,21 14,21';
-  const viz=document.getElementById('mp-viz');
-  BAR_H.forEach((h,i)=>{
-    const b=document.createElement('div');
-    b.className='mp-b'; b.style.height=h+'px';
-    b.style.animationDelay=(i*0.088)+'s';
+
+  /* ── Playlist ───────────────────────────────────────────────
+     Ajoute ici toutes tes pistes dans l'ordre de lecture.
+     Quand la dernière est terminée, on repart de la première.
+  ──────────────────────────────────────────────────────────── */
+  var PLAYLIST = [
+    { src: 'assets/audio/medioma-seuil.mp3',    label: 'Bienvenue'       },
+    { src: 'assets/audio/medioma-presence.mp3', label: 'Soins & Énergies' }
+    /* Ajoute d'autres pistes ici : { src: '...', label: '...' } */
+  ];
+
+  var currentIndex = 0;
+
+  /* ── Éléments DOM ── */
+  const BAR_H = [5,13,18,7,17,5,20,10,18,6,15,8,19,11,16];
+  const CIRC  = 150.8;
+  const PLAY  = '5,3 19,12 5,21';
+  const PAUSE = '4,3 10,3 10,21 4,21 M14,3 20,3 20,21 14,21';
+
+  const viz     = document.getElementById('mp-viz');
+  const audio   = document.getElementById('mp-audio');
+  const poly    = document.getElementById('mp-poly');
+  const ring    = document.getElementById('mp-ring-fill');
+  const trackEl = document.getElementById('mp-track');
+
+  /* ── Barres d'égaliseur ── */
+  BAR_H.forEach(function(h, i){
+    var b = document.createElement('div');
+    b.className = 'mp-b';
+    b.style.height = h + 'px';
+    b.style.animationDelay = (i * 0.088) + 's';
     viz.appendChild(b);
   });
-  const audio=document.getElementById('mp-audio');
-  const source=document.getElementById('mp-source');
-  const poly=document.getElementById('mp-poly');
-  const ring=document.getElementById('mp-ring-fill');
-  const trackEl=document.getElementById('mp-track');
-  let playing=false, prog=0, tmr=null, currentTrack='seuil';
-  function setRing(p){ ring.style.strokeDashoffset=(CIRC-(p/100)*CIRC).toFixed(2); }
-  function fade(from,to,ms,cb){
-    const steps=25,dt=ms/steps,delta=(to-from)/steps;
-    let cur=from;
-    const t=setInterval(()=>{
-      cur+=delta; audio.volume=Math.min(1,Math.max(0,cur));
-      if((delta>0&&cur>=to)||(delta<0&&cur<=to)){clearInterval(t);if(cb)cb();}
-    },dt);
+
+  /* ── État ── */
+  var playing = false;
+  var prog    = 0;
+  var tmr     = null;
+
+  function setRing(p){
+    ring.style.strokeDashoffset = (CIRC - (p / 100) * CIRC).toFixed(2);
   }
+
+  function fade(from, to, ms, cb){
+    var steps = 25, dt = ms / steps, delta = (to - from) / steps;
+    var cur = from;
+    var t = setInterval(function(){
+      cur += delta;
+      audio.volume = Math.min(1, Math.max(0, cur));
+      if ((delta > 0 && cur >= to) || (delta < 0 && cur <= to)){
+        clearInterval(t);
+        if (cb) cb();
+      }
+    }, dt);
+  }
+
+  /* ── Charger une piste sans couper si déjà en lecture ── */
+  function loadTrack(index, autoplay){
+    var track = PLAYLIST[index];
+    if (!track) return;
+    trackEl.textContent = track.label;
+    audio.src = track.src;
+    audio.load();
+    if (autoplay){
+      audio.volume = 0;
+      audio.play().then(function(){
+        fade(0, 0.27, 800);
+      }).catch(function(){});
+    }
+  }
+
+  /* ── Passage automatique à la piste suivante ── */
+  audio.addEventListener('ended', function(){
+    currentIndex = (currentIndex + 1) % PLAYLIST.length;
+    loadTrack(currentIndex, true);
+  });
+
+  /* ── Play / Pause ── */
   function startPlay(restore){
-    audio.volume=0;
-    audio.play().then(()=>{
-      fade(0,0.27,restore?400:2000);
+    audio.volume = 0;
+    audio.play().then(function(){
+      fade(0, 0.27, restore ? 400 : 2000);
       document.body.classList.add('playing');
-      poly.setAttribute('points',PAUSE);
-      playing=true;
-      localStorage.setItem('medioma_audio','on');
-      tmr=setInterval(()=>{ prog=(prog+0.22)%100; setRing(prog); },100);
-    }).catch(()=>{});
+      poly.setAttribute('points', PAUSE);
+      playing = true;
+      localStorage.setItem('medioma_audio', 'on');
+      tmr = setInterval(function(){
+        prog = (prog + 0.22) % 100;
+        setRing(prog);
+      }, 100);
+    }).catch(function(){});
   }
+
   function stopPlay(){
-    fade(audio.volume,0,900,()=>audio.pause());
+    fade(audio.volume, 0, 900, function(){ audio.pause(); });
     document.body.classList.remove('playing');
-    poly.setAttribute('points',PLAY);
-    playing=false;
-    localStorage.setItem('medioma_audio','off');
-    clearInterval(tmr); setRing(0); prog=0;
+    poly.setAttribute('points', PLAY);
+    playing = false;
+    localStorage.setItem('medioma_audio', 'off');
+    clearInterval(tmr);
+    setRing(0);
+    prog = 0;
   }
-  window.toggle=function(){ playing?stopPlay():startPlay(false); };
-  function switchTrack(t){
-    if(t===currentTrack)return;
-    currentTrack=t;
-    const src=t==='presence'
-      ?'assets/audio/medioma-presence.mp3'
-      :'assets/audio/medioma-seuil.mp3';
-    trackEl.textContent=t==='presence'?'Soins & Énergies':'Bienvenue';
-    if(!playing){source.src=src;audio.load();return;}
-    fade(audio.volume,0,700,()=>{
-      audio.pause(); source.src=src; audio.load(); audio.volume=0;
-      audio.play().then(()=>fade(0,0.27,700)).catch(()=>{});
-    });
+
+  window.toggle = function(){
+    playing ? stopPlay() : startPlay(false);
+  };
+
+  window.hidePlayer = function(){
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.4s';
+    setTimeout(function(){
+      if (playing) stopPlay();
+    }, 400);
+  };
+
+  /* ── Init : charge la première piste, reprend si l'user avait activé ── */
+  loadTrack(currentIndex, false);
+
+  if (localStorage.getItem('medioma_audio') === 'on'){
+    startPlay(true);
   }
-  const ch=new BroadcastChannel('medioma_track');
-  ch.addEventListener('message',e=>{ if(e.data&&e.data.track) switchTrack(e.data.track); });
-  if(localStorage.getItem('medioma_audio')==='on') startPlay(true);
+
 })();
 </script>
+
 </body>
 </html>

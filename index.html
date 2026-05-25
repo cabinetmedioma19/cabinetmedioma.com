@@ -30,7 +30,7 @@
     z-index: 1;
   }
 
-  /* Player audio — iframe fixe, persiste entre toutes les navigations */
+  /* Player audio — iframe fixe, chargée une seule fois, jamais rechargée */
   #medioma-player-frame {
     position: fixed;
     bottom: 20px;
@@ -41,7 +41,6 @@
     z-index: 1000;
     border-radius: 12px;
     overflow: hidden;
-    /* Invisible tant que le player n'est pas prêt */
     opacity: 0;
     transition: opacity 0.5s ease;
   }
@@ -64,7 +63,7 @@
 </head>
 <body>
 
-  <!-- Iframe principale : contenu du site — ne recharge JAMAIS le player -->
+  <!-- Iframe principale : contenu du site -->
   <iframe
     id="medioma-frame"
     src="home.html"
@@ -74,8 +73,9 @@
 
   <!--
     Player audio : chargé UNE SEULE FOIS dans le shell parent.
-    Il ne se recharge JAMAIS lors des navigations entre pages.
-    Communication via BroadcastChannel('medioma_track').
+    Il ne se recharge JAMAIS lors des navigations entre les pages.
+    Mode playlist : les pistes s'enchaînent automatiquement.
+    Aucun switch de piste selon la page — musique continue.
   -->
   <iframe
     id="medioma-player-frame"
@@ -86,41 +86,12 @@
 
   <script>
     (function(){
+      var playerFrame = document.getElementById('medioma-player-frame');
 
-      var contentFrame = document.getElementById('medioma-frame');
-      var playerFrame  = document.getElementById('medioma-player-frame');
-      var channel      = new BroadcastChannel('medioma_track');
-
-      // Pages de "présence" → piste soins & énergies
-      var presencePages = [
-        'magnetisme','chakras','nettoyage',
-        'mediation','prestations','contact','rendez-vous',
-        'harmonisation','bilan','voyance','meditation'
-      ];
-
-      // Affiche le player une fois chargé
+      // Affiche le player en fondu une fois chargé
       playerFrame.addEventListener('load', function(){
         playerFrame.classList.add('ready');
       });
-
-      // On ignore le tout premier load (home.html = seuil = piste par défaut)
-      var firstLoad = true;
-
-      contentFrame.addEventListener('load', function(){
-        if (firstLoad) { firstLoad = false; return; }
-
-        try {
-          var url = contentFrame.contentWindow.location.pathname.toLowerCase();
-          var isPres = presencePages.some(function(p){ return url.indexOf(p) !== -1; });
-
-          // Envoie la commande de piste via BroadcastChannel → medioma-player.html l'écoute
-          channel.postMessage({ track: isPres ? 'presence' : 'seuil' });
-
-        } catch(e) {
-          // Sécurité cross-origin silencieuse
-        }
-      });
-
     })();
   </script>
 
