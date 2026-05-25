@@ -56,6 +56,7 @@
   const PLAY    = '5,3 19,12 5,21';
   const PAUSE   = '4,3 9,3 9,21 4,21 M15,3 20,3 20,21 15,21';
   let playing   = false;
+  let starting  = false;   // true pendant que audio.play() est en cours (Promise pending)
   let prog      = 0;
   let tmr       = null;
 
@@ -76,8 +77,10 @@
 
   function startPlay() {
     audio.volume = 0;
+    starting = true;
     audio.play().then(() => {
-      fadeVolume(0, 0.27, 2000);
+      starting = false;
+      fadeVolume(0, 0.27, 800);   // démarrage rapide : 800 ms au lieu de 2000 ms
       player.classList.add('playing');
       player.setAttribute('aria-pressed', 'true');
       icon.setAttribute('points', PAUSE);
@@ -87,7 +90,7 @@
         prog = (prog + 0.22) % 100;
         pfill.style.width = prog.toFixed(1) + '%';
       }, 100);
-    }).catch(() => {});
+    }).catch(() => { starting = false; });
   }
 
   function stopPlay() {
@@ -117,20 +120,20 @@
     labelEl.textContent = newLabel;
 
     if (!playing) {
-      // Pas de lecture en cours — juste changer la source
+      // Pas de lecture en cours — changer la source (sans load si démarrage en cours)
       audio.src = newSrc;
-      audio.load();
+      if (!starting) audio.load();
       return;
     }
-    // Lecture en cours : fondu sortant → changer piste → fondu entrant
+    // Lecture en cours : fondu ultra-rapide pour éviter la sensation de "relance"
     const vol = audio.volume;
-    fadeVolume(vol, 0, 700, () => {
+    fadeVolume(vol, 0, 150, () => {
       audio.pause();
       audio.src = newSrc;
       audio.load();
       audio.volume = 0;
       audio.play().then(() => {
-        fadeVolume(0, 0.27, 1800);
+        fadeVolume(0, 0.27, 500);
       }).catch(() => {});
     });
   };

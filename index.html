@@ -83,11 +83,14 @@
         'harmonisation','bilan','voyance'
       ];
 
+      // On ignore le tout premier load (home.html = seuil = piste par défaut déjà correcte)
+      var firstLoad = true;
       frame.addEventListener('load', function(){
+        if (firstLoad) { firstLoad = false; return; }
         try {
           var url = frame.contentWindow.location.pathname.toLowerCase();
           var isPres = presencePages.some(function(p){ return url.indexOf(p) !== -1; });
-          // Demande au player de switcher la piste si nécessaire (fondu croisé)
+          // Demande au player de switcher la piste si nécessaire
           if (typeof window._mediomaSwitchTrack === 'function') {
             window._mediomaSwitchTrack(isPres);
           }
