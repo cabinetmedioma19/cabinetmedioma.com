@@ -120,22 +120,15 @@
     labelEl.textContent = newLabel;
 
     if (!playing) {
-      // Pas de lecture en cours — changer la source (sans load si démarrage en cours)
+      // Pas de lecture — on prépare la bonne source pour la prochaine lecture
       audio.src = newSrc;
       if (!starting) audio.load();
       return;
     }
-    // Lecture en cours : fondu ultra-rapide pour éviter la sensation de "relance"
-    const vol = audio.volume;
-    fadeVolume(vol, 0, 150, () => {
-      audio.pause();
-      audio.src = newSrc;
-      audio.load();
-      audio.volume = 0;
-      audio.play().then(() => {
-        fadeVolume(0, 0.27, 500);
-      }).catch(() => {});
-    });
+    // Lecture en cours → on NE coupe JAMAIS la musique en cours de navigation.
+    // La piste correcte sera chargée à la prochaine fois que l'utilisateur
+    // arrête puis relance manuellement.
+    audio.src = newSrc; // mémorisé, appliqué au prochain startPlay()
   };
 
   // Démarrage automatique si l'utilisateur avait laissé la musique allumée
