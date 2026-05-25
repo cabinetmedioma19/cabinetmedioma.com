@@ -21,6 +21,8 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: #0c0c0c; }
+
+    /* Iframe principale — contenu du site */
     #medioma-frame {
       position: fixed;
       top: 0; left: 0;
@@ -29,10 +31,24 @@
       border: none;
       z-index: 1;
     }
-</style>
+
+    /* Player audio — widget fixe en bas à droite, au-dessus du contenu */
+    #medioma-player-frame {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      height: 110px;
+      border: none;
+      z-index: 100;
+      border-radius: 12px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.55);
+    }
+  </style>
 </head>
 <body>
 
+  <!-- Contenu principal du site -->
   <iframe
     id="medioma-frame"
     src="home.html"
@@ -40,13 +56,33 @@
     allow="fullscreen"
   ></iframe>
 
-  <!--
-    Quand l'iframe navigue vers une nouvelle page :
-    1. On lit l'URL chargée dans l'iframe
-    2. On détermine si c'est une page PRÉSENCE ou SEUIL
-    3. On demande au player de switcher la piste si nécessaire
-  -->
+  <!-- Player audio persistant : ne se recharge jamais, la musique continue entre les pages -->
+  <iframe
+    id="medioma-player-frame"
+    src="medioma-player.html"
+    title="Lecteur audio MEDIOMA"
+    allow="autoplay"
+  ></iframe>
 
+  <script>
+    // Détection de navigation dans l'iframe principale
+    // → broadcast de la piste audio correspondante via BroadcastChannel
+    (function(){
+      var frame  = document.getElementById('medioma-frame');
+      var bc     = new BroadcastChannel('medioma_track');
+
+      // Pages de soins → piste "présence" (ambiance soin)
+      var presencePages = ['chakras','magnetisme','harmonisation','bilan','meditation','nettoyage','voyance'];
+
+      frame.addEventListener('load', function(){
+        try {
+          var url = frame.contentWindow.location.pathname.toLowerCase();
+          var isPresence = presencePages.some(function(p){ return url.indexOf(p) !== -1; });
+          bc.postMessage({ track: isPresence ? 'presence' : 'seuil' });
+        } catch(e){}
+      });
+    })();
+  </script>
 
 </body>
 </html>

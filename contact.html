@@ -390,6 +390,7 @@ nav .mega-desc {
   .calendly-cards{grid-template-columns:1fr !important;}
 }
 </style>
-<script src="assets/js/medioma-audio.js" defer></script>
+<!-- Audio : ne s'initialise pas si la page est dans l'iframe MEDIOMA -->
+<script>(function(){if(window.self===window.top){var s=document.createElement('script');s.src='assets/js/medioma-audio.js';s.defer=true;document.head.appendChild(s);}}());</script>
 </body>
 </html>

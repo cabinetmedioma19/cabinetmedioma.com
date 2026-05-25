@@ -98,11 +98,8 @@
     <p class="hero-role">Thérapeute en Bien-être &nbsp;·&nbsp; Magnétiseur &nbsp;·&nbsp; Médium</p>
     <div class="hero-divider"></div>
     <p class="hero-promise">« Là où la lumière rencontre l'âme »</p>
-    <div class="hero-pills">
-      <span class="hero-pill">Magnétisme</span><span class="hero-pill">Voyance</span>
-      <span class="hero-pill">Médiumité</span><span class="hero-pill">Chakras</span>
-      <span class="hero-pill">Purification</span><span class="hero-pill">Méditation</span>
-    </div>
+    <p class="hero-services-text">Magnétisme &nbsp;&middot;&nbsp; Voyance &nbsp;&middot;&nbsp; Médiumité &nbsp;&middot;&nbsp; Chakras &nbsp;&middot;&nbsp; Purification &nbsp;&middot;&nbsp; Méditation</p>
+    <style>.hero-services-text{font-family:var(--sans,"Jost",sans-serif);font-size:.8rem;font-weight:300;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-lt,#d4a84b);opacity:.8;margin-top:1.4rem;line-height:2;}</style>
     <a href="contact.html" class="hero-cta"><span>Prendre Rendez-vous</span></a>
   </div>
   <div class="hero-scroll"><div class="hero-scroll-line"></div></div>
@@ -264,6 +261,7 @@
 
 <script src="animations.js" defer></script>
 
-<script src="assets/js/medioma-audio.js" defer></script>
+<!-- Audio : ne s'initialise pas si la page est dans l'iframe MEDIOMA -->
+<script>(function(){if(window.self===window.top){var s=document.createElement('script');s.src='assets/js/medioma-audio.js';s.defer=true;document.head.appendChild(s);}}());</script>
 </body>
 </html>
