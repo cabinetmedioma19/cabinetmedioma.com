@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>CDS – Chat Twitch</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:transparent;font-family:'Barlow',sans-serif;}
+
+#chat-wrap{
+  position:absolute;bottom:0;left:0;right:0;
+  display:flex;flex-direction:column;gap:6px;padding:10px;
+}
+.msg{
+  display:flex;align-items:flex-start;gap:8px;
+  animation:slideIn .3s cubic-bezier(.34,1.26,.64,1) forwards;opacity:0;
+}
+@keyframes slideIn{0%{opacity:0;transform:translateX(-20px)}100%{opacity:1;transform:translateX(0)}}
+.msg.out{animation:slideOut .3s ease-in forwards}
+@keyframes slideOut{0%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(-20px)}}
+
+.msg-avatar{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:900;color:#fff;
+  font-family:'Barlow Condensed',sans-serif;margin-top:2px;
+}
+.msg-bubble{
+  background:rgba(6,12,24,.92);
+  border-left:3px solid var(--user-color,#f5820a);
+  border-radius:0 6px 6px 0;padding:6px 12px;
+  max-width:calc(100% - 42px);
+}
+.msg-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:var(--user-color,#f5820a);line-height:1;margin-bottom:3px;
+}
+.msg-text{font-size:14px;font-weight:400;color:rgba(255,255,255,.9);line-height:1.4;word-break:break-word;}
+.msg-badge{
+  display:inline-block;font-size:8px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  padding:1px 5px;border-radius:2px;margin-right:4px;vertical-align:middle;
+}
+.badge-mod        {background:rgba(0,230,118,.2);color:#00e676}
+.badge-sub        {background:rgba(168,85,247,.2);color:#a855f7}
+.badge-vip        {background:rgba(245,130,10,.2);color:#f5820a}
+.badge-broadcaster{background:rgba(232,24,31,.2);color:#e8181f}
+
+#status{
+  position:fixed;bottom:4px;right:6px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:rgba(255,255,255,.2);
+}
+#status.on{color:#00e676}
+#status.err{color:#e8181f}
+</style>
+</head>
+<body>
+<div id="chat-wrap"></div>
+<div id="status">...</div>
+
+<script>
+const CHANNEL  = 'antares_fc';
+const MAX_MSGS = 10;
+const COLORS   = ['#f5820a','#38b6ff','#00e676','#a855f7','#f5c400','#ff6b6b','#00d4ff','#ff9a3b'];
+
+const wrap   = document.getElementById('chat-wrap');
+const status = document.getElementById('status');
+let msgs = [], userColors = {}, colorIdx = 0;
+
+function getColor(user){
+  if(!userColors[user]) userColors[user] = COLORS[colorIdx++ % COLORS.length];
+  return userColors[user];
+}
+
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function addMessage(user, text, badges){
+  const color = getColor(user);
+  const el = document.createElement('div');
+  el.className = 'msg';
+  el.style.setProperty('--user-color', color);
+
+  const badgesHtml = (badges||[]).map(b=>{
+    if(b==='moderator')   return '<span class="msg-badge badge-mod">MOD</span>';
+    if(b==='subscriber')  return '<span class="msg-badge badge-sub">SUB</span>';
+    if(b==='vip')         return '<span class="msg-badge badge-vip">VIP</span>';
+    if(b==='broadcaster') return '<span class="msg-badge badge-broadcaster">LIVE</span>';
+    return '';
+  }).join('');
+
+  el.innerHTML = `
+    <div class="msg-avatar" style="background:${color}">${escHtml(user.slice(0,2).toUpperCase())}</div>
+    <div class="msg-bubble">
+      <div class="msg-name">${badgesHtml}${escHtml(user)}</div>
+      <div class="msg-text">${escHtml(text)}</div>
+    </div>`;
+
+  wrap.appendChild(el);
+  msgs.push(el);
+
+  if(msgs.length > MAX_MSGS){
+    const old = msgs.shift();
+    old.classList.add('out');
+    setTimeout(()=>{ try{ old.remove(); }catch(e){} }, 350);
+  }
+}
+
+/* ── WebSocket Twitch IRC ── */
+let ws, pingInterval;
+
+function connect(){
+  try{ ws.close(); }catch(e){}
+  clearInterval(pingInterval);
+
+  status.textContent = '...';
+  status.className = '';
+
+  ws = new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+
+  ws.onopen = function(){
+    ws.send('PASS oauth:justinfan');
+    ws.send('NICK justinfan' + Math.floor(Math.random()*89999+10000));
+    ws.send('CAP REQ :twitch.tv/tags twitch.tv/commands');
+    ws.send('JOIN #' + CHANNEL);
+    // Keepalive toutes les 4 min
+    pingInterval = setInterval(function(){
+      if(ws.readyState === 1) ws.send('PING :tmi.twitch.tv');
+    }, 240000);
+  };
+
+  ws.onmessage = function(e){
+    var lines = e.data.split('\r\n');
+    lines.forEach(function(line){
+      if(!line) return;
+
+      // PING
+      if(line.indexOf('PING') === 0){
+        ws.send('PONG :tmi.twitch.tv');
+        return;
+      }
+
+      // PRIVMSG — message chat
+      if(line.indexOf('PRIVMSG') !== -1){
+        // Parse tags
+        var tags = {};
+        if(line.charAt(0) === '@'){
+          var tagStr = line.slice(1, line.indexOf(' '));
+          tagStr.split(';').forEach(function(t){
+            var idx = t.indexOf('=');
+            if(idx !== -1) tags[t.slice(0,idx)] = t.slice(idx+1);
+          });
+        }
+
+        // Username
+        var userMatch = line.match(/:([a-zA-Z0-9_]+)![a-zA-Z0-9_]+@[a-zA-Z0-9_]+\.tmi\.twitch\.tv PRIVMSG/);
+        var user = tags['display-name'] || (userMatch ? userMatch[1] : 'viewer');
+
+        // Message
+        var msgIdx = line.lastIndexOf('PRIVMSG #' + CHANNEL + ' :');
+        if(msgIdx === -1) return;
+        var text = line.slice(msgIdx + ('PRIVMSG #' + CHANNEL + ' :').length).trim();
+        if(!text) return;
+
+        // Badges
+        var badgeStr = tags['badges'] || '';
+        var badges = badgeStr ? badgeStr.split(',').map(function(b){ return b.split('/')[0]; }) : [];
+
+        addMessage(user, text, badges);
+        status.textContent = '● ' + CHANNEL;
+        status.className = 'on';
+      }
+
+      // Connecté au channel
+      if(line.indexOf('366') !== -1 || line.indexOf('JOIN') !== -1){
+        status.textContent = '● ' + CHANNEL;
+        status.className = 'on';
+      }
+    });
+  };
+
+  ws.onerror = function(){
+    status.textContent = '✕';
+    status.className = 'err';
+  };
+
+  ws.onclose = function(){
+    status.textContent = 'reconnexion...';
+    status.className = 'err';
+    setTimeout(connect, 4000);
+  };
+}
+
+connect();
+</script>
+</body>
+</html>
