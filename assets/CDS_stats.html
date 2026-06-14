@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>CDS – Stats Live</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:transparent;font-family:'Barlow Condensed',sans-serif;}
+body.obs .controls{display:none!important}
+
+.widget{
+  position:absolute;top:0;left:0;
+  width:100%;
+  background:rgba(6,12,24,.95);
+  border-top:3px solid #f5820a;
+  border-left:2px solid rgba(245,130,10,.3);
+  border-radius:0 3px 3px 0;
+  overflow:hidden;
+}
+
+.widget-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 12px;
+  border-bottom:1px solid rgba(245,130,10,.15);
+  background:rgba(245,130,10,.06);
+}
+.widget-title{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#f5820a;}
+.widget-status{font-size:9px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1px;}
+.widget-status.live{color:#00e676;}
+
+/* Match sélectionné */
+.match-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;
+  border-bottom:1px solid rgba(245,130,10,.1);
+}
+.match-teams{display:flex;align-items:center;gap:8px;}
+.match-team{font-size:13px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:1px;}
+.match-score{font-size:20px;font-weight:900;color:#f5820a;letter-spacing:2px;}
+.match-time{font-size:10px;font-weight:700;color:#38b6ff;letter-spacing:1px;}
+
+/* Stats */
+.stats-list{padding:8px 12px;display:flex;flex-direction:column;gap:6px;}
+.stat-row{display:flex;align-items:center;gap:6px;}
+.stat-label{
+  font-size:9px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:rgba(255,255,255,.35);
+  flex:1;text-align:center;
+}
+.stat-val-a{font-size:14px;font-weight:900;color:#38b6ff;min-width:28px;text-align:right;}
+.stat-val-b{font-size:14px;font-weight:900;color:#f5820a;min-width:28px;text-align:left;}
+.stat-bar-wrap{
+  flex:2;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;
+  display:flex;
+}
+.stat-bar-a{height:100%;background:#38b6ff;border-radius:2px 0 0 2px;transition:width .5s ease;}
+.stat-bar-b{height:100%;background:#f5820a;border-radius:0 2px 2px 0;transition:width .5s ease;}
+
+/* Liste matchs */
+.matches-list{padding:6px 12px;display:flex;flex-direction:column;gap:3px;max-height:200px;overflow-y:auto;}
+.match-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:5px 8px;border-radius:2px;cursor:pointer;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  transition:background .1s;
+}
+.match-item:hover,.match-item.active{background:rgba(245,130,10,.1);border-color:rgba(245,130,10,.3);}
+.match-item-teams{font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;}
+.match-item-score{font-size:12px;font-weight:900;color:#f5820a;}
+.match-item-time{font-size:9px;color:#38b6ff;font-weight:700;}
+.match-item-league{font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1px;}
+
+/* No data */
+.no-data{padding:20px 12px;text-align:center;font-size:12px;color:rgba(255,255,255,.3);font-weight:700;letter-spacing:1px;}
+
+/* Controls */
+.controls{
+  position:fixed;bottom:10px;right:10px;
+  background:#0b1428;border:1px solid rgba(245,130,10,.3);
+  border-radius:3px;padding:10px;
+  display:flex;flex-direction:column;gap:6px;z-index:100;
+}
+.ctrl-btn{
+  padding:7px 12px;border-radius:2px;
+  font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;font-family:'Barlow Condensed',sans-serif;
+  background:rgba(245,130,10,.1);border:1px solid rgba(245,130,10,.3);color:#f5820a;
+}
+.ctrl-btn:hover{background:rgba(245,130,10,.25)}
+.ctrl-btn.obs{background:rgba(56,182,255,.1);border-color:rgba(56,182,255,.3);color:#38b6ff}
+</style>
+</head>
+<body>
+
+<div class="widget" id="widget">
+  <div class="widget-header">
+    <span class="widget-title">⚽ Matchs Live</span>
+    <span class="widget-status" id="ws-status">Chargement...</span>
+  </div>
+  <div id="matches-list" class="matches-list"></div>
+  <div id="match-detail" style="display:none">
+    <div class="match-header">
+      <div class="match-teams">
+        <span class="match-team" id="det-teamA">-</span>
+        <span class="match-score" id="det-score">0-0</span>
+        <span class="match-team" id="det-teamB">-</span>
+      </div>
+      <span class="match-time" id="det-time">-</span>
+    </div>
+    <div class="stats-list" id="stats-list"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="ctrl-btn" onclick="fetchMatches()">🔄 Actualiser</button>
+  <button class="ctrl-btn" onclick="showList()">← Liste matchs</button>
+  <button class="ctrl-btn obs" onclick="document.body.classList.toggle('obs')">📺 Mode OBS</button>
+</div>
+
+<script>
+const API_KEY  = '6bab612032msha24f9ea06967289p11f281jsn986eb3eb70d3';
+const API_HOST = 'free-api-live-football-data.p.rapidapi.com';
+const BASE_URL = 'https://free-api-live-football-data.p.rapidapi.com';
+
+let matches = [];
+let selectedMatch = null;
+let refreshTimer = null;
+
+async function fetchMatches(){
+  const status = document.getElementById('ws-status');
+  status.textContent = 'Chargement...';
+  status.className = 'widget-status';
+
+  try {
+    const res = await fetch(`${BASE_URL}/football-current-live`, {
+      headers: {
+        'x-rapidapi-key': API_KEY,
+        'x-rapidapi-host': API_HOST
+      }
+    });
+    const data = await res.json();
+    matches = data?.response?.live || [];
+
+    status.textContent = matches.length > 0 ? `● ${matches.length} match(s) live` : 'Aucun match en cours';
+    status.className = matches.length > 0 ? 'widget-status live' : 'widget-status';
+
+    renderList();
+
+    if(selectedMatch) {
+      const found = matches.find(m => m.id === selectedMatch);
+      if(found) renderDetail(found);
+    }
+  } catch(e) {
+    status.textContent = '✕ Erreur API';
+    status.className = 'widget-status';
+    console.error(e);
+  }
+}
+
+function renderList(){
+  const list = document.getElementById('matches-list');
+  list.innerHTML = '';
+  document.getElementById('match-detail').style.display = 'none';
+  list.style.display = 'flex';
+
+  if(matches.length === 0){
+    list.innerHTML = '<div class="no-data">Aucun match en cours</div>';
+    return;
+  }
+
+  matches.forEach(m => {
+    const home = m.homeTeam?.name || m.home || 'Dom.';
+    const away = m.awayTeam?.name || m.away || 'Ext.';
+    const scoreH = m.score?.home ?? m.homeScore ?? '?';
+    const scoreA = m.score?.away ?? m.awayScore ?? '?';
+    const time   = m.time || m.minute || '?';
+    const league = m.league?.name || m.competition || '';
+
+    const item = document.createElement('div');
+    item.className = 'match-item' + (selectedMatch===m.id?' active':'');
+    item.innerHTML = `
+      <div>
+        <div class="match-item-teams">${home} vs ${away}</div>
+        <div class="match-item-league">${league}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="match-item-score">${scoreH} - ${scoreA}</div>
+        <div class="match-item-time">${time}'</div>
+      </div>
+    `;
+    item.onclick = () => selectMatch(m);
+    list.appendChild(item);
+  });
+}
+
+async function selectMatch(m){
+  selectedMatch = m.id;
+  renderDetail(m);
+
+  // Essayer de charger les stats
+  try {
+    const res = await fetch(`${BASE_URL}/football-get-all-stats-by-event-id?eventid=${m.id}`, {
+      headers: {
+        'x-rapidapi-key': API_KEY,
+        'x-rapidapi-host': API_HOST
+      }
+    });
+    const data = await res.json();
+    const stats = data?.response?.stats || data?.response || [];
+    if(stats.length > 0) renderStats(stats);
+  } catch(e) {
+    console.error('Stats error:', e);
+  }
+}
+
+function renderDetail(m){
+  const home   = m.homeTeam?.name || m.home || 'Dom.';
+  const away   = m.awayTeam?.name || m.away || 'Ext.';
+  const scoreH = m.score?.home ?? m.homeScore ?? '?';
+  const scoreA = m.score?.away ?? m.awayScore ?? '?';
+  const time   = m.time || m.minute || '?';
+
+  document.getElementById('det-teamA').textContent = home;
+  document.getElementById('det-teamB').textContent = away;
+  document.getElementById('det-score').textContent = `${scoreH} - ${scoreA}`;
+  document.getElementById('det-time').textContent  = `${time}'`;
+
+  document.getElementById('matches-list').style.display = 'none';
+  document.getElementById('match-detail').style.display = 'block';
+}
+
+function renderStats(stats){
+  const list = document.getElementById('stats-list');
+  list.innerHTML = '';
+
+  const statNames = {
+    'ball_possession': 'Possession',
+    'total_shots': 'Tirs',
+    'shots_on_target': 'Tirs cadrés',
+    'corner_kicks': 'Corners',
+    'yellow_cards': 'Cartons J.',
+    'red_cards': 'Cartons R.',
+    'offsides': 'Hors-jeu',
+    'fouls': 'Fautes',
+  };
+
+  const homeStats = {};
+  const awayStats = {};
+
+  stats.forEach(s => {
+    if(s.team === 'home' || s.teamId === stats[0]?.teamId) homeStats[s.type] = s.value;
+    else awayStats[s.type] = s.value;
+  });
+
+  Object.entries(statNames).forEach(([key, label]) => {
+    const vA = homeStats[key] || '0';
+    const vB = awayStats[key] || '0';
+    const numA = parseFloat(String(vA).replace('%','')) || 0;
+    const numB = parseFloat(String(vB).replace('%','')) || 0;
+    const total = numA + numB || 1;
+    const pA = Math.round(numA/total*100);
+    const pB = 100 - pA;
+
+    const row = document.createElement('div');
+    row.className = 'stat-row';
+    row.innerHTML = `
+      <span class="stat-val-a">${vA}</span>
+      <div class="stat-bar-wrap">
+        <div class="stat-bar-a" style="width:${pA}%"></div>
+        <div class="stat-bar-b" style="width:${pB}%"></div>
+      </div>
+      <span class="stat-val-b">${vB}</span>
+      <span class="stat-label">${label}</span>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function showList(){
+  selectedMatch = null;
+  document.getElementById('match-detail').style.display = 'none';
+  document.getElementById('matches-list').style.display = 'flex';
+}
+
+// Actualisation toutes les 60 secondes
+function startRefresh(){
+  fetchMatches();
+  refreshTimer = setInterval(fetchMatches, 60000);
+}
+
+if(new URLSearchParams(location.search).get('obs')==='1') document.body.classList.add('obs');
+
+startRefresh();
+</script>
+</body>
+</html>
