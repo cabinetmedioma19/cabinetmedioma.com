@@ -142,7 +142,6 @@ async function fetchMatches(){
     });
     const data = await res.json();
     matches = data?.response?.live || [];
-    if(matches.length > 0) console.log('MATCH STRUCTURE:', JSON.stringify(matches[0], null, 2));
 
     status.textContent = matches.length > 0 ? `● ${matches.length} match(s) live` : 'Aucun match en cours';
     status.className = matches.length > 0 ? 'widget-status live' : 'widget-status';
@@ -172,13 +171,12 @@ function renderList(){
   }
 
   matches.forEach(m => {
-    // Parsing flexible selon structure API
-    const home = typeof m.home === 'object' ? (m.home?.name || m.home?.team || JSON.stringify(m.home)) : (m.homeTeam?.name || m.home || 'Dom.');
-    const away = typeof m.away === 'object' ? (m.away?.name || m.away?.team || JSON.stringify(m.away)) : (m.awayTeam?.name || m.away || 'Ext.');
-    const scoreH = m.score?.home ?? m.homeScore ?? m.scores?.home ?? '?';
-    const scoreA = m.score?.away ?? m.awayScore ?? m.scores?.away ?? '?';
-    const time   = m.time || m.minute || m.timer || '?';
-    const league = typeof m.league === 'object' ? (m.league?.name || '') : (m.competition || m.league || '');
+    const home   = m.home?.name || 'Dom.';
+    const away   = m.away?.name || 'Ext.';
+    const scoreH = m.home?.score ?? '?';
+    const scoreA = m.away?.score ?? '?';
+    const time   = m.status?.liveTime?.short || m.time || '?';
+    const league = m.leagueId || '';
 
     const item = document.createElement('div');
     item.className = 'match-item' + (selectedMatch===m.id?' active':'');
@@ -218,11 +216,11 @@ async function selectMatch(m){
 }
 
 function renderDetail(m){
-  const home   = typeof m.home === 'object' ? (m.home?.name || m.home?.team || 'Dom.') : (m.homeTeam?.name || m.home || 'Dom.');
-  const away   = typeof m.away === 'object' ? (m.away?.name || m.away?.team || 'Ext.') : (m.awayTeam?.name || m.away || 'Ext.');
-  const scoreH = m.score?.home ?? m.homeScore ?? m.scores?.home ?? '?';
-  const scoreA = m.score?.away ?? m.awayScore ?? m.scores?.away ?? '?';
-  const time   = m.time || m.minute || m.timer || '?';
+  const home   = m.home?.name || 'Dom.';
+  const away   = m.away?.name || 'Ext.';
+  const scoreH = m.home?.score ?? '?';
+  const scoreA = m.away?.score ?? '?';
+  const time   = m.status?.liveTime?.short || m.time || '?';
 
   document.getElementById('det-teamA').textContent = home;
   document.getElementById('det-teamB').textContent = away;
