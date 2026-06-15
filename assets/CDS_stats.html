@@ -142,6 +142,7 @@ async function fetchMatches(){
     });
     const data = await res.json();
     matches = data?.response?.live || [];
+    if(matches.length > 0) console.log('MATCH STRUCTURE:', JSON.stringify(matches[0], null, 2));
 
     status.textContent = matches.length > 0 ? `● ${matches.length} match(s) live` : 'Aucun match en cours';
     status.className = matches.length > 0 ? 'widget-status live' : 'widget-status';
