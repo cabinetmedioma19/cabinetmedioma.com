@@ -171,12 +171,13 @@ function renderList(){
   }
 
   matches.forEach(m => {
-    const home = m.homeTeam?.name || m.home || 'Dom.';
-    const away = m.awayTeam?.name || m.away || 'Ext.';
-    const scoreH = m.score?.home ?? m.homeScore ?? '?';
-    const scoreA = m.score?.away ?? m.awayScore ?? '?';
-    const time   = m.time || m.minute || '?';
-    const league = m.league?.name || m.competition || '';
+    // Parsing flexible selon structure API
+    const home = typeof m.home === 'object' ? (m.home?.name || m.home?.team || JSON.stringify(m.home)) : (m.homeTeam?.name || m.home || 'Dom.');
+    const away = typeof m.away === 'object' ? (m.away?.name || m.away?.team || JSON.stringify(m.away)) : (m.awayTeam?.name || m.away || 'Ext.');
+    const scoreH = m.score?.home ?? m.homeScore ?? m.scores?.home ?? '?';
+    const scoreA = m.score?.away ?? m.awayScore ?? m.scores?.away ?? '?';
+    const time   = m.time || m.minute || m.timer || '?';
+    const league = typeof m.league === 'object' ? (m.league?.name || '') : (m.competition || m.league || '');
 
     const item = document.createElement('div');
     item.className = 'match-item' + (selectedMatch===m.id?' active':'');
@@ -216,11 +217,11 @@ async function selectMatch(m){
 }
 
 function renderDetail(m){
-  const home   = m.homeTeam?.name || m.home || 'Dom.';
-  const away   = m.awayTeam?.name || m.away || 'Ext.';
-  const scoreH = m.score?.home ?? m.homeScore ?? '?';
-  const scoreA = m.score?.away ?? m.awayScore ?? '?';
-  const time   = m.time || m.minute || '?';
+  const home   = typeof m.home === 'object' ? (m.home?.name || m.home?.team || 'Dom.') : (m.homeTeam?.name || m.home || 'Dom.');
+  const away   = typeof m.away === 'object' ? (m.away?.name || m.away?.team || 'Ext.') : (m.awayTeam?.name || m.away || 'Ext.');
+  const scoreH = m.score?.home ?? m.homeScore ?? m.scores?.home ?? '?';
+  const scoreA = m.score?.away ?? m.awayScore ?? m.scores?.away ?? '?';
+  const time   = m.time || m.minute || m.timer || '?';
 
   document.getElementById('det-teamA').textContent = home;
   document.getElementById('det-teamB').textContent = away;
