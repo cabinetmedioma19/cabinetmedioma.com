@@ -22,9 +22,18 @@
   /* ============ ALERTE (style bandeau match TV) ============ */
   #alert-stage{
     position:fixed;left:0;right:0;bottom:12vh;
-    display:flex;justify-content:center;pointer-events:none;
-    z-index:10;
+    display:flex;flex-direction:column;align-items:center;gap:18px;
+    pointer-events:none;z-index:10;
   }
+  .alert-media{
+    max-height:260px;max-width:460px;
+    filter:drop-shadow(0 10px 30px rgba(0,0,0,.5));
+    opacity:0;transform:translateY(30px) scale(.85);
+  }
+  .alert-media.in{animation:media-in .5s .15s cubic-bezier(.2,.9,.3,1.2) forwards}
+  .alert-media.out{animation:media-out .4s ease-in forwards}
+  @keyframes media-in{to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes media-out{to{opacity:0;transform:translateY(-20px) scale(.9)}}
   .alert-plate{
     position:relative;
     display:flex;align-items:stretch;
@@ -155,6 +164,10 @@
   <h2>3 · Sons (facultatif)</h2>
   <p>Un son par type d'événement, stocké dans le navigateur (IndexedDB, comme la soundboard). Sans fichier : jingle par défaut.</p>
   <div id="sound-rows"></div>
+
+  <h2>3b · Images / GIFs (facultatif)</h2>
+  <p>Un visuel par type d'événement (PNG, JPG, GIF animé, WebP), affiché au-dessus du bandeau. Sans fichier : bandeau seul.</p>
+  <div id="image-rows"></div>
   <div class="checkline">
     <input type="checkbox" id="tts-toggle">
     <label for="tts-toggle" style="margin:0">Lire à voix haute les messages de re-sub (synthèse vocale FR)</label>
@@ -358,6 +371,17 @@ async function nextAlert(){
   if (!a){ showing = false; return; }
   showing = true;
   const stage = document.getElementById("alert-stage");
+  let media = null, mediaUrl = null;
+  const imgBlob = db ? await dbGet("images", a.kind) : null;
+  if (imgBlob){
+    mediaUrl = URL.createObjectURL(imgBlob);
+    media = document.createElement("img");
+    media.className = "alert-media";
+    media.src = mediaUrl;
+    media.alt = "";
+    stage.appendChild(media);
+    requestAnimationFrame(()=> media.classList.add("in"));
+  }
   const plate = document.createElement("div");
   plate.className = "alert-plate";
   plate.innerHTML = `
@@ -378,8 +402,10 @@ async function nextAlert(){
   const dur = a.message ? 10000 : 8000;
   await wait(dur);
   plate.classList.remove("in"); plate.classList.add("out");
+  if (media){ media.classList.remove("in"); media.classList.add("out"); }
   await wait(500);
   plate.remove();
+  if (media){ media.remove(); URL.revokeObjectURL(mediaUrl); }
   nextAlert();
 }
 function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
@@ -395,19 +421,28 @@ function speak(text){
 /* ================= SONS (IndexedDB + jingle par défaut) ================= */
 let db;
 function openDB(){
-  return new Promise((res,rej)=>{
-    const r = indexedDB.open("cds_alerts", 1);
-    r.onupgradeneeded = ()=> r.result.createObjectStore("sounds");
-    r.onsuccess = ()=>{ db=r.result; res(); };
-    r.onerror = rej;
+  return new Promise((res)=>{
+    const r = indexedDB.open("cds_alerts", 2);
+    const guard = setTimeout(()=>res(), 4000); // ne jamais bloquer la page
+    r.onupgradeneeded = ()=>{
+      const d = r.result;
+      if (!d.objectStoreNames.contains("sounds")) d.createObjectStore("sounds");
+      if (!d.objectStoreNames.contains("images")) d.createObjectStore("images");
+    };
+    r.onblocked = ()=>{
+      const el = document.getElementById("auth-status");
+      if (el){ el.textContent = "Stockage verrouillé par un autre onglet — ferme les autres onglets du widget (et la source OBS) puis recharge."; el.className = "status err"; }
+    };
+    r.onsuccess = ()=>{ clearTimeout(guard); db=r.result; db.onversionchange=()=>db.close(); res(); };
+    r.onerror = ()=>{ clearTimeout(guard); res(); };
   });
 }
-function dbGet(k){ return new Promise(res=>{ const t=db.transaction("sounds").objectStore("sounds").get(k); t.onsuccess=()=>res(t.result||null); t.onerror=()=>res(null); }); }
-function dbSet(k,v){ return new Promise(res=>{ const t=db.transaction("sounds","readwrite").objectStore("sounds").put(v,k); t.onsuccess=res; }); }
-function dbDel(k){ return new Promise(res=>{ const t=db.transaction("sounds","readwrite").objectStore("sounds").delete(k); t.onsuccess=res; }); }
+function dbGet(store,k){ return new Promise(res=>{ const t=db.transaction(store).objectStore(store).get(k); t.onsuccess=()=>res(t.result||null); t.onerror=()=>res(null); }); }
+function dbSet(store,k,v){ return new Promise(res=>{ const t=db.transaction(store,"readwrite").objectStore(store).put(v,k); t.onsuccess=res; }); }
+function dbDel(store,k){ return new Promise(res=>{ const t=db.transaction(store,"readwrite").objectStore(store).delete(k); t.onsuccess=res; }); }
 
 async function playSound(kind){
-  const blob = db ? await dbGet(kind) : null;
+  const blob = db ? await dbGet("sounds", kind) : null;
   if (blob){
     const a = new Audio(URL.createObjectURL(blob));
     a.volume = .85; a.play().catch(()=>{});
@@ -431,29 +466,33 @@ function defaultJingle(big){
   }catch(e){}
 }
 
-/* rangées d'upload dans le panneau */
-async function buildSoundRows(){
-  const wrap = document.getElementById("sound-rows");
+/* rangées d'upload dans le panneau (sons + images) */
+async function buildMediaRows(store, wrapId, accept, defaultLabel){
+  const wrap = document.getElementById(wrapId);
   wrap.innerHTML = "";
   for (const t of EVENT_TYPES){
-    const has = db ? await dbGet(t.key) : null;
+    const has = db ? await dbGet(store, t.key) : null;
     const row = document.createElement("div");
     row.className = "soundrow";
     row.innerHTML = `<b>${t.label}</b>
-      <input type="file" accept="audio/*" data-kind="${t.key}">
-      <span>${has ? "✔ personnalisé" : "jingle par défaut"}</span>
+      <input type="file" accept="${accept}" data-kind="${t.key}">
+      <span>${has ? "✔ personnalisé" : defaultLabel}</span>
       ${has ? `<button class="del" data-del="${t.key}">supprimer</button>` : ""}`;
     wrap.appendChild(row);
   }
   wrap.querySelectorAll("input[type=file]").forEach(inp=>{
     inp.addEventListener("change", async e=>{
       const f = e.target.files[0];
-      if (f){ await dbSet(e.target.dataset.kind, f); buildSoundRows(); }
+      if (f){ await dbSet(store, e.target.dataset.kind, f); buildAllRows(); }
     });
   });
   wrap.querySelectorAll("[data-del]").forEach(btn=>{
-    btn.addEventListener("click", async ()=>{ await dbDel(btn.dataset.del); buildSoundRows(); });
+    btn.addEventListener("click", async ()=>{ await dbDel(store, btn.dataset.del); buildAllRows(); });
   });
+}
+function buildAllRows(){
+  buildMediaRows("sounds", "sound-rows", "audio/*", "jingle par défaut");
+  buildMediaRows("images", "image-rows", "image/*", "aucun visuel");
 }
 
 /* ================= TESTS ================= */
@@ -479,8 +518,8 @@ ttsBox.addEventListener("change", ()=> localStorage.setItem(LS.tts, ttsBox.check
 
 /* ================= DÉMARRAGE ================= */
 async function start(){
-  await openDB().catch(()=>{});
-  buildSoundRows();
+  await openDB();
+  buildAllRows();
   const cid = localStorage.getItem(LS.clientId);
   if (cid) document.getElementById("client-id").value = cid;
   const u = await validateToken(false);
